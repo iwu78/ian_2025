@@ -5,7 +5,6 @@ github_username: iwu78
 github_repo: "ian_2025" 
 baseurl: "/ian_2025"
 future: true
-remote_theme: fongandrew/hydeout
 # minima:
 #  skin: dark
 #  social_links:
