@@ -1,0 +1,181 @@
+---
+layout: post
+title: Sprint 1 - Emoji 
+description: Emoji
+type: collab
+categories:
+  - Sprint 1
+comments: True
+---
+
+<link rel="stylesheet" href="../../../../emoji.css">
+<h1>Draw something!</h1>
+
+<div id="container">
+    <div id="controls">
+        <div id="colorPicker"></div>
+        <label for="brushSize">Brush Size: <span id="brushSizeValue">5</span></label>
+        <input type="range" id="brushSize" min="1" max="50" value="5">
+    </div>
+
+    <canvas id="drawingCanvas" width="160" height="160"></canvas>
+    <br>
+    <button id="doneButton">Done</button>
+
+    <!-- Progress bar -->
+    <div id="progressContainer">
+        <div id="progressBar"></div>
+        <span id="progressPercent">0%</span>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+<script async src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript"></script>
+
+<script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let brushColor = '#ff0000'; // Default color
+    let brushSize = 5; // Default brush size
+
+    // Initialize IRO color picker
+    const colorPicker = new iro.ColorPicker("#colorPicker", {
+        width: 200,
+        color: "#ff0000" // Default color
+    });
+
+    // Update the color when user picks a color
+    colorPicker.on('color:change', function(color) {
+        brushColor = color.hexString;
+    });
+
+    // Brush size slider event
+    const brushSizeSlider = document.getElementById('brushSize');
+    const brushSizeValue = document.getElementById('brushSizeValue');
+    brushSizeSlider.addEventListener('input', function() {
+        brushSize = brushSizeSlider.value;
+        brushSizeValue.textContent = brushSize;
+    });
+
+    // Event listeners for drawing
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mousemove', draw);
+
+    function startDrawing(e) {
+        drawing = true;
+        draw(e);  // Start drawing right away
+    }
+
+    function stopDrawing() {
+        drawing = false;
+        ctx.beginPath();  // Reset path so no unintended lines are drawn
+    }
+
+    function draw(e) {
+        if (!drawing) return;
+
+        ctx.lineWidth = brushSize;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = brushColor;
+
+        ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
+
+    // Load emoji images from a folder (accessible via URL)
+    const emojiImages = [];
+    const numberOfEmojis = 846; // Change to the number of emoji images you have
+
+    for (let i = 1; i <= numberOfEmojis; i++) {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = `https://raw.githubusercontent.com/tmm1/emoji-extractor/master/images/160x160/${i}.png`;
+        emojiImages.push(img);
+    }
+
+    function computeMSE(imgData1, imgData2) {
+        const data1 = imgData1.data;
+        const data2 = imgData2.data;
+        let mse = 0;
+
+        for (let i = 0; i < data1.length; i += 4) {
+            const rDiff = data1[i] - data2[i];
+            const gDiff = data1[i + 1] - data2[i + 1];
+            const bDiff = data1[i + 2] - data2[i + 2];
+
+            mse += (rDiff * rDiff + gDiff * gDiff + bDiff * bDiff) / 3;
+        }
+        return mse / (imgData1.width * imgData1.height);
+    }
+
+    document.getElementById('doneButton').addEventListener('click', function() {
+        const userImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Initialize an array to store the top 3 closest emojis with their MSE values
+        const topMatches = [
+            { emoji: null, mse: Infinity },
+            { emoji: null, mse: Infinity },
+            { emoji: null, mse: Infinity }
+        ];
+        let currentIndex = 0;
+
+        function processNextEmoji() {
+            if (currentIndex >= numberOfEmojis) {
+                // Once processing is done, display the top 3 closest matching emojis
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '<h3>Top 3 Closest Emoji Matches:</h3>';
+
+                // Display all 3 emojis in a row
+                topMatches.forEach(match => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = match.emoji.src;
+                    resultDiv.appendChild(imgElement);
+                });
+                return;
+            }
+
+            const emojiImage = emojiImages[currentIndex];
+
+            // Update progress bar and percentage
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const percentage = ((currentIndex + 1) / numberOfEmojis) * 100;
+
+            progressBar.style.width = `${percentage}%`;
+            progressPercent.textContent = `${Math.round(percentage)}%`; // Update the percentage display
+
+            // Draw the emoji image on a temporary canvas
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 160;
+            tempCanvas.height = 160;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(emojiImage, 0, 0, 160, 160);
+            const emojiImageData = tempCtx.getImageData(0, 0, 160, 160);
+
+            // Compute MSE between user drawing and emoji
+            const mse = computeMSE(userImage, emojiImageData);
+
+            // Check if the current emoji belongs in the top 3
+            if (mse < topMatches[2].mse) {
+                topMatches[2] = { emoji: emojiImage, mse: mse }; // Replace the 3rd place match
+
+                // Sort the matches to keep the best (lowest MSE) at the top
+                topMatches.sort((a, b) => a.mse - b.mse);
+            }
+
+            // Move to the next emoji after a slight delay to allow the UI to update
+            currentIndex++;
+            setTimeout(processNextEmoji, 0); // Use setTimeout to release control and let the UI update
+        }
+
+        // Start processing emojis
+        processNextEmoji();
+    });
+
+</script>
