@@ -40,3 +40,6 @@ defaults:
 
 # Sidebar link settings
 sidebar_home_link:  true
+
+exclude:
+  - venv

@@ -1,49 +1,15 @@
-# Ignore docs files
-_gh_pages
 _site
-.ruby-version
-
-# Numerous always-ignore extensions
-*.diff
-*.err
-*.orig
-*.log
-*.rej
-*.swo
-*.swp
-*.zip
-*.vi
-*~
-
-# OS or Editor folders
-.DS_Store
-._*
-Thumbs.db
-.cache
-.project
-.settings
-.tmproj
-*.esproj
-nbproject
-*.sublime-project
-*.sublime-workspace
-.idea
-
-# Komodo
-*.komodoproject
-.komodotools
-
-# grunt-html-validation
-validation-status.json
-validation-report.json
-
-# Folders to ignore
-node_modules
-.sass-cache
-
-# Dev stuff
-Makefile
+*.pyc
+__pycache__/
+_posts/**/*_IPYNB_2_.md
+_posts/**/*_GithubIssue_.md
+_posts/**/*_GithubIssue.md
+_posts/**/*_GithubPR.md
+_posts/**/*-by_author.json
+nohup.out
 Gemfile.lock
-_config.dev.yml
-.vscode
-*.gem
+node_modules
+.DS_Store
+.env
+_posts/2024-06-25-RDS-and-Flask-Setup-
+venv/
