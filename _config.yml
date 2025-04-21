@@ -7,6 +7,7 @@ title:            CSA_Blog
 description:      'CSA_Blog'
 url:              https://iwu78.github.io
 baseurl:          '/ian_2025'
+remote_theme:     fongandrew/hydeout
 
 author:
   name:           'Ian Wu'
@@ -20,6 +21,7 @@ plugins:
   - jekyll-paginate
   - jekyll-include-cache
   - jemoji
+  - jekyll-remote-theme
 
 exclude:
   - Gemfile
