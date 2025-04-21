@@ -59,7 +59,7 @@ def process_mermaid_cells(notebook):
             mermaid_code = cell.source.replace("~~~mermaid", "").replace("~~~", "").strip()
             image_path = convert_mermaid_to_image(mermaid_code)
             if image_path:
-                cell.source = f"![Mermaid Diagram](../../../../{image_path})"
+                cell.source = f"![Mermaid Diagram](../../../{image_path})"
 
 def convert_notebook_to_markdown_with_front_matter(notebook_file):
     with open(notebook_file, 'r', encoding='utf-8') as file:

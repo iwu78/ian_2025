@@ -30,5 +30,5 @@ Version Control
     - Yes, the subdomain was defined by my github username when I signed up, and on GitHub pages when I set the folder for the website.
 
 ## GitHub Lens, Analytics
-![alt text](../../../../images/image.png)
-![alt text](../../../../images/image-1.png)
+![alt text](../../../images/image.png)
+![alt text](../../../images/image-1.png)
