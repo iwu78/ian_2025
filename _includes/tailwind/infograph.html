@@ -1,0 +1,41 @@
+<div>
+  {% assign data = site.data[page.infoGraph] %}
+  <div class="container">
+
+    <!-- Header Section -->
+    <div class="header-box">
+      <h1>{{ data.Title }}</h1>
+      <p>{{ data.Description }}</p>
+    </div>
+
+    <!-- Rows Section -->
+    <div id="rows">
+      {% for topic in data.Topics %}
+        <div class="row-box">
+          <!-- Image Column -->
+          <div class="image-column">
+            <a href="{{ site.baseurl }}{{ topic.link }}">
+              <img src="/ian_2025/assets/images/{{ topic.image }}" alt="{{ topic.alt }}">
+            </a>
+          </div>
+
+          <!-- Key Points Column -->
+          <div class="keypoints-column">
+            <h3>{{ topic.title }}</h3>
+            <ul>
+              {% for point in topic.keyPoints %}
+                <li>{{ point }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- Description Column -->
+          <div class="description-column">
+            <h3>{{ topic.subtitle }}</h3>
+            <p>{{ topic.description }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

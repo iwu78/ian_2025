@@ -72,7 +72,7 @@
       const q = questions[index];
       container.innerHTML = `
         <div class="mcq-question">
-          <img src="${q.image}" alt="Question Image" class="mcq-image" />
+          <img src="/ian_2025/${q.image}" alt="Question Image" class="mcq-image" />
           <label for="${q.id}" class="mcq-label">Choose your answer:</label>
           <select id="${q.id}" class="mcq-select">
             <option value="">Select an answer</option>
@@ -80,6 +80,7 @@
             <option value="B">B</option>
             <option value="C">C</option>
             <option value="D">D</option>
+            <option value="D">E</option>
           </select>
           <div id="${q.id}-feedback" class="mcq-feedback"></div>
           <button id="next-btn" class="mcq-next-btn">Next Question</button>
