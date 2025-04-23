@@ -22,7 +22,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install nbconvert
+        run: pip install nbconvert nbformat pyyaml
 
       - name: Convert notebooks
         run: python scripts/convert_notebooks.py
