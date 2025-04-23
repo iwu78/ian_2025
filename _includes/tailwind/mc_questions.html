@@ -1,0 +1,128 @@
+{% assign data = site.data[page.questions] %}
+
+<style>
+  .mcq-container {
+    padding-top: 1.5rem;
+    border-top: 1px solid #ccc;
+  }
+
+  .mcq-question {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #fff;
+    margin-bottom: 1.5rem;
+  }
+
+  .mcq-image {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .mcq-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  .mcq-select {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.4rem;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+  }
+
+  .mcq-feedback {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  .mcq-next-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: none;
+  }
+
+  .mcq-next-btn:hover {
+    background-color: #45a049;
+  }
+</style>
+
+<div id="mcq-container" class="mcq-container"></div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const questions = {{ site.data[page.questions].questions | jsonify }};
+    const container = document.getElementById("mcq-container");
+    let current = 0;
+
+    function showQuestion(index) {
+      const q = questions[index];
+      container.innerHTML = `
+        <div class="mcq-question">
+          <img src="${q.image}" alt="Question Image" class="mcq-image" />
+          <label for="${q.id}" class="mcq-label">Choose your answer:</label>
+          <select id="${q.id}" class="mcq-select">
+            <option value="">Select an answer</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+          <div id="${q.id}-feedback" class="mcq-feedback"></div>
+          <button id="next-btn" class="mcq-next-btn">Next Question</button>
+        </div>
+      `;
+
+      const selectEl = document.getElementById(q.id);
+      const feedbackEl = document.getElementById(`${q.id}-feedback`);
+      const nextBtn = document.getElementById("next-btn");
+
+      const saved = localStorage.getItem(q.id);
+      if (saved) {
+        selectEl.value = saved;
+        feedbackEl.textContent = saved === q.answer
+          ? "✅ Correct"
+          : `❌ Incorrect (Correct answer: ${q.answer})`;
+        feedbackEl.style.display = "block";
+        feedbackEl.style.color = saved === q.answer ? "green" : "red";
+        nextBtn.style.display = "inline-block";
+      }
+
+      selectEl.addEventListener("change", () => {
+        const selected = selectEl.value;
+        if (!selected) return;
+        localStorage.setItem(q.id, selected);
+        feedbackEl.textContent = selected === q.answer
+          ? "✅ Correct"
+          : `❌ Incorrect (Correct answer: ${q.answer})`;
+        feedbackEl.style.display = "block";
+        feedbackEl.style.color = selected === q.answer ? "green" : "red";
+        nextBtn.style.display = "inline-block";
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (current < questions.length - 1) {
+          current++;
+          showQuestion(current);
+        } else {
+          container.innerHTML = `<p style="padding: 1rem;">🎉 You’ve completed all the questions!</p>`;
+        }
+      });
+    }
+
+    showQuestion(current);
+  });
+</script>

@@ -1,6 +1,6 @@
 ---
 layout: category
-title: Sprint 2 - CB Units - Java
-permalink: /sprint2/
+title: AP Test Prep
+permalink: /aptestprep/
 sidebar_link: false
 ---
